@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import example_pb2 as example__pb2
+import chat_pb2 as chat__pb2
 
 GRPC_GENERATED_VERSION = '1.68.1'
 GRPC_VERSION = grpc.__version__
@@ -18,14 +18,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in example_pb2_grpc.py depends on'
+        + f' but the generated code in chat_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class ExampleServiceStub(object):
+class ChatServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,43 +34,43 @@ class ExampleServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SayHello = channel.unary_unary(
-                '/ExampleService/SayHello',
-                request_serializer=example__pb2.HelloRequest.SerializeToString,
-                response_deserializer=example__pb2.HelloResponse.FromString,
+        self.Chat = channel.stream_stream(
+                '/ChatService/Chat',
+                request_serializer=chat__pb2.ChatMessage.SerializeToString,
+                response_deserializer=chat__pb2.ChatMessage.FromString,
                 _registered_method=True)
 
 
-class ExampleServiceServicer(object):
+class ChatServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SayHello(self, request, context):
+    def Chat(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_ExampleServiceServicer_to_server(servicer, server):
+def add_ChatServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SayHello': grpc.unary_unary_rpc_method_handler(
-                    servicer.SayHello,
-                    request_deserializer=example__pb2.HelloRequest.FromString,
-                    response_serializer=example__pb2.HelloResponse.SerializeToString,
+            'Chat': grpc.stream_stream_rpc_method_handler(
+                    servicer.Chat,
+                    request_deserializer=chat__pb2.ChatMessage.FromString,
+                    response_serializer=chat__pb2.ChatMessage.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'ExampleService', rpc_method_handlers)
+            'ChatService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('ExampleService', rpc_method_handlers)
+    server.add_registered_method_handlers('ChatService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class ExampleService(object):
+class ChatService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SayHello(request,
+    def Chat(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -80,12 +80,12 @@ class ExampleService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
+        return grpc.experimental.stream_stream(
+            request_iterator,
             target,
-            '/ExampleService/SayHello',
-            example__pb2.HelloRequest.SerializeToString,
-            example__pb2.HelloResponse.FromString,
+            '/ChatService/Chat',
+            chat__pb2.ChatMessage.SerializeToString,
+            chat__pb2.ChatMessage.FromString,
             options,
             channel_credentials,
             insecure,
